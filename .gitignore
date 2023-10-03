@@ -1,0 +1,8 @@
+__pycache__/
+.env
+.venv
+logging.conf
+.pytest_cache
+
+http_tests
+.vscode
