@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, HTTPException
+from starlette import status
 
 from config.database import get_mongo_database
 from config.logging import config_logger
@@ -22,7 +23,7 @@ monog_database = get_mongo_database()
 repository = PeopleMongoRepository(monog_database)
 
 
-@app.post("/create")
+@app.post("/create", status_code=status.HTTP_201_CREATED)
 def create(people: CreatePeopleDTO):
     try:
         repository.create(people)

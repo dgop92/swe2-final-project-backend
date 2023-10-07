@@ -16,7 +16,7 @@ async def list(request: Request):
     return response
 
 
-@people_router.post("/")
+@people_router.post("/", status_code=status.HTTP_201_CREATED)
 async def create(request: Request):
     try:
         body = await request.json()
@@ -29,7 +29,6 @@ async def create(request: Request):
 @people_router.patch("/{documentId}")
 async def update(request: Request, documentId: str):
     try:
-        print(documentId)
         body = await request.json()
         response = people_service.update(documentId, body)
         return response
