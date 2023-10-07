@@ -3,7 +3,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, field_validator
 
 
-class People(BaseModel):
+class CreatePeopleDTO(BaseModel):
     documentType: str
     documentId: str
     firstName: str

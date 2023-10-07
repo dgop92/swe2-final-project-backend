@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException
 
 from config.database import get_mongo_database
 from config.logging import config_logger
-from core.entities import People
+from core.entities import CreatePeopleDTO
 from core.repository import PeopleMongoRepository, RepositoryException
 
 config_logger()
@@ -23,7 +23,7 @@ repository = PeopleMongoRepository(monog_database)
 
 
 @app.post("/create")
-def create(people: People):
+def create(people: CreatePeopleDTO):
     try:
         repository.create(people)
     except RepositoryException as e:

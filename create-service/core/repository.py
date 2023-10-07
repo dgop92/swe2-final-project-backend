@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pymongo import database
 
-from core.entities import People
+from core.entities import CreatePeopleDTO
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +18,8 @@ class PeopleMongoRepository:
         logger.info("initializing people mongo repository")
         self.collection = db["people"]
 
-    def create(self, people: People) -> People:
-        logger.info("creating people")
+    def create(self, people: CreatePeopleDTO) -> CreatePeopleDTO:
+        logger.info(f"creating people with documentId {people.documentId}")
         # check if a document with the same documentId already exists
         if self.collection.find_one({"documentId": people.documentId}):
             raise RepositoryException(
@@ -31,7 +31,5 @@ class PeopleMongoRepository:
         people_as_dict["birthDate"] = datetime.combine(
             people_birth_date, datetime.min.time()
         )
-        print(people_as_dict)
-        res = self.collection.insert_one(people_as_dict)
-        print(res)
+        self.collection.insert_one(people_as_dict)
         return people
