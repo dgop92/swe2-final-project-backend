@@ -16,10 +16,11 @@ class RepositoryException(Exception):
 
 def from_mongo_to_people_detail(data: Dict[str, Any]) -> DetailPeopleDTO:
     new_date = data["birthDate"].date()
+    photo_url = data.get("photoUrl", "https://example.com/photo.jpg")
     new_data = {
         **data,
         "birthDate": new_date,
-        "photoUrl": "https://example.com/photo.jpg",
+        "photoUrl": photo_url,
     }
     return DetailPeopleDTO(**new_data)
 

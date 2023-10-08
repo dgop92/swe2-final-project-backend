@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 
 from config.database import get_mongo_database
 from config.logging import config_logger
@@ -25,6 +25,12 @@ repository = PeopleMongoRepository(monog_database)
 @app.patch("/update/{doc_id}")
 def update(doc_id: str, data: UpdatePeopleDTO):
     people = repository.update_by_doc_id(doc_id, data)
+    return people
+
+
+@app.patch("/update/{doc_id}/image")
+def upload_image(doc_id: str, file: UploadFile):
+    people = repository.update_photo_url_doc_id(doc_id, file)
     return people
 
 
