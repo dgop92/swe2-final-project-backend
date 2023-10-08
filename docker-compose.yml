@@ -38,6 +38,36 @@ services:
     depends_on:
       - mongodb
 
+  update_service:
+    container_name: update_service_container
+    build:
+      context: ./update-service
+    restart: "no"
+    env_file:
+      - ./container_files/env-vars/.service.env
+    networks:
+      - main_network
+    command:
+      - sh
+      - run-prod.sh
+    depends_on:
+      - mongodb
+
+  delete_service:
+    container_name: delete_service_container
+    build:
+      context: ./delete-service
+    restart: "no"
+    env_file:
+      - ./container_files/env-vars/.service.env
+    networks:
+      - main_network
+    command:
+      - sh
+      - run-prod.sh
+    depends_on:
+      - mongodb
+
   api_gateway:
     container_name: api_gateway_container
     build:
@@ -67,3 +97,4 @@ services:
       - mongo-data:/data/db
     networks:
       - main_network
+    command: --quiet
