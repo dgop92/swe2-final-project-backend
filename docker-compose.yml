@@ -4,6 +4,9 @@ networks:
   main_network:
     name: main_network
 
+volumes:
+  mongo-data:
+
 services:
   create_service:
     container_name: create_service_container
@@ -17,6 +20,23 @@ services:
     command:
       - sh
       - run-prod.sh
+    depends_on:
+      - mongodb
+
+  read_service:
+    container_name: read_service_container
+    build:
+      context: ./read-service
+    restart: "no"
+    env_file:
+      - ./container_files/env-vars/.service.env
+    networks:
+      - main_network
+    command:
+      - sh
+      - run-prod.sh
+    depends_on:
+      - mongodb
 
   api_gateway:
     container_name: api_gateway_container
@@ -32,3 +52,18 @@ services:
     command:
       - sh
       - run-prod.sh
+    depends_on:
+      - create_service
+      - read_service
+
+  mongodb:
+    container_name: mongodb_container
+    image: mongo
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./container_files/env-vars/.mongo.env
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - main_network
