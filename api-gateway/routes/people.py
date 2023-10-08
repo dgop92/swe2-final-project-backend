@@ -1,9 +1,10 @@
 from json.decoder import JSONDecodeError
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, UploadFile
 from starlette import status
 
 from core.people_service.factory import get_people_service
+from core.people_service.rest_people_service import upload_image
 
 people_router = APIRouter()
 people_service = get_people_service()
@@ -24,6 +25,12 @@ async def create(request: Request):
         return response
     except JSONDecodeError:
         return {"message": "Invalid JSON body."}
+
+
+@people_router.patch("/{documentId}/image")
+async def upload_image_endpoint(documentId: str, file: UploadFile):
+    response = upload_image(documentId, file)
+    return response
 
 
 @people_router.patch("/{documentId}")

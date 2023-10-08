@@ -1,7 +1,7 @@
 from typing import List
 
 import requests
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 
 from config.settings import PEOPLE_SERVICE_URLS
 from core.people_service.definitions import (
@@ -10,6 +10,25 @@ from core.people_service.definitions import (
     PeopleResponse,
     PeopleService,
 )
+
+
+def upload_image(document_id: str, upload_file: UploadFile):
+    files = {"file": (upload_file.filename, upload_file.file, upload_file.content_type)}
+    r = requests.patch(
+        f"{PEOPLE_SERVICE_URLS['update']}/update/{document_id}/image",
+        files=files,
+        timeout=15,
+    )
+    if r.status_code == 200:
+        return r.json()
+    elif r.status_code == 422:
+        raise HTTPException(status_code=422, detail=r.json()["detail"])
+    elif r.status_code == 404:
+        raise HTTPException(status_code=404, detail=r.json()["detail"])
+    elif r.status_code == 400:
+        raise HTTPException(status_code=400, detail=r.json()["detail"])
+    else:
+        raise HTTPException(status_code=500)
 
 
 class RestPeopleService(PeopleService):
@@ -41,7 +60,7 @@ class RestPeopleService(PeopleService):
             raise HTTPException(status_code=422, detail=r.json()["detail"])
         elif r.status_code == 400:
             raise HTTPException(status_code=400, detail=r.json()["detail"])
-        elif 404:
+        elif r.status_code == 404:
             raise HTTPException(status_code=404, detail=r.json()["detail"])
         else:
             raise HTTPException(status_code=500)
