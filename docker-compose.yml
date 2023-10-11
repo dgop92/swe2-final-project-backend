@@ -9,7 +9,7 @@ volumes:
 
 services:
   create_service:
-    container_name: create_service_container
+    container_name: k_create_service_container
     build:
       context: ./create-service
     restart: "no"
@@ -24,7 +24,7 @@ services:
       - mongodb
 
   read_service:
-    container_name: read_service_container
+    container_name: k_read_service_container
     build:
       context: ./read-service
     restart: "no"
@@ -38,56 +38,8 @@ services:
     depends_on:
       - mongodb
 
-  update_service:
-    container_name: update_service_container
-    build:
-      context: ./update-service
-    restart: "no"
-    env_file:
-      - ./container_files/env-vars/.service.env
-    networks:
-      - main_network
-    command:
-      - sh
-      - run-prod.sh
-    depends_on:
-      - mongodb
-
-  delete_service:
-    container_name: delete_service_container
-    build:
-      context: ./delete-service
-    restart: "no"
-    env_file:
-      - ./container_files/env-vars/.service.env
-    networks:
-      - main_network
-    command:
-      - sh
-      - run-prod.sh
-    depends_on:
-      - mongodb
-
-  api_gateway:
-    container_name: api_gateway_container
-    build:
-      context: ./api-gateway
-    ports:
-      - "8000:8000"
-    restart: "no"
-    env_file:
-      - ./container_files/env-vars/.api-gateway.env
-    networks:
-      - main_network
-    command:
-      - sh
-      - run-prod.sh
-    depends_on:
-      - create_service
-      - read_service
-
   mongodb:
-    container_name: mongodb_container
+    container_name: k_mongodb_container
     image: mongo
     ports:
       - "27017:27017"
@@ -98,3 +50,26 @@ services:
     networks:
       - main_network
     command: --quiet
+
+  kong_dbless:
+    image: kong:3.4.0
+    container_name: kong_dbless_container
+    hostname: kong_dbless
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      KONG_ADMIN_GUI_URL: http://localhost:8002
+    volumes:
+      - "./kong-gateway:/kong/declarative/"
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+      - "127.0.0.1:8001:8001"
+      - "127.0.0.1:8444:8444"
+    networks:
+      - main_network

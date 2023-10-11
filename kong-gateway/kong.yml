@@ -1,0 +1,20 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: create-service
+    url: http://create_service:8011/create
+    routes:
+    - name: create-route
+      paths:
+      - /people
+      methods:
+        - POST
+  - name: read-service
+    url: http://read_service:8012/detail
+    routes:
+    - name: read-route
+      paths:
+      - /people
+      methods:
+        - GET
