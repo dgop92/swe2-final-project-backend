@@ -1,0 +1,6 @@
+fastapi[all]==0.103.2
+python-decouple==3.8
+pydantic==2.4.2
+pymongo==4.5.0
+pytest==7.4.2
+cloudinary==1.36.0
