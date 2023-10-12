@@ -40,6 +40,38 @@ services:
     depends_on:
       - mongodb
 
+  update_service:
+    container_name: k_update_service_container
+    build:
+      context: ./people_service
+    restart: "no"
+    env_file:
+      - ./container_files/env-vars/.people-service.env
+    networks:
+      - main_network
+    command:
+      - sh
+      - run-prod.sh
+      - update
+    depends_on:
+      - mongodb
+
+  delete_service:
+    container_name: k_delete_service_container
+    build:
+      context: ./people_service
+    restart: "no"
+    env_file:
+      - ./container_files/env-vars/.people-service.env
+    networks:
+      - main_network
+    command:
+      - sh
+      - run-prod.sh
+      - delete
+    depends_on:
+      - mongodb
+
   mongodb:
     container_name: k_mongodb_container
     image: mongo
@@ -79,3 +111,5 @@ services:
     depends_on:
       - create_service
       - read_service
+      - update_service
+      - delete_service

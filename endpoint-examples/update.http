@@ -1,0 +1,56 @@
+@baseUrl = http://localhost:8000/people
+@contentType = application/json
+
+### Invalid input
+PATCH {{baseUrl}}/555555001 HTTP/1.1
+
+{
+    "gender": "Juan"
+}
+
+
+###
+PATCH {{baseUrl}}/555555006 HTTP/1.1
+
+{
+    "first_name": "Name updated",
+    "middle_name": "Middle name updated",
+    "birthDate": "10-05-2020"
+}
+
+
+### Empty body does nothing
+PATCH {{baseUrl}}/555555006 HTTP/1.1
+
+{
+   
+}
+
+### not found
+PATCH {{baseUrl}}/aa245006 HTTP/1.1
+
+{
+    "first_name": "Name updated"
+}
+
+### valid image
+PATCH {{baseUrl}}/555555007/image
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="gato-elegante.PNG"
+Content-Type: image/png
+
+< ./gato-elegante.PNG
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### invalid type
+PATCH {{baseUrl}}/555555005/image
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="hello.txt"
+Content-Type: text/plain
+
+< ./hello.txt
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

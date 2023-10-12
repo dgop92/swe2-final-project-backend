@@ -1,0 +1,9 @@
+@baseUrl = http://localhost:8000/people
+@contentType = application/json
+
+
+###
+DELETE {{baseUrl}}/555555008 HTTP/1.1
+
+###
+DELETE {{baseUrl}}/1 HTTP/1.1

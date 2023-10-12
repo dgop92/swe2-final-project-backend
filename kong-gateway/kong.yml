@@ -18,3 +18,19 @@ services:
       - /people
       methods:
         - GET
+  - name: update-service
+    url: http://update_service:8013
+    routes:
+    - name: update-route
+      paths:
+      - /people
+      methods:
+        - PATCH
+  - name: delete-service
+    url: http://delete_service:8014
+    routes:
+    - name: delete-route
+      paths:
+      - /people
+      methods:
+        - DELETE
