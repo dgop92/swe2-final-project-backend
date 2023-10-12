@@ -3,7 +3,7 @@ _transform: true
 
 services:
   - name: create-service
-    url: http://create_service:8011/create
+    url: http://create_service:8011
     routes:
     - name: create-route
       paths:
@@ -11,7 +11,7 @@ services:
       methods:
         - POST
   - name: read-service
-    url: http://read_service:8012/detail
+    url: http://read_service:8012
     routes:
     - name: read-route
       paths:

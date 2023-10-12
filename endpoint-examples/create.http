@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:8000/people
+@contentType = application/json
+
+### invalid input
+POST {{baseUrl}} HTTP/1.1
+
+{
+    "ad": "pep"
+}
+
+### invalid input
+POST {{baseUrl}} HTTP/1.1
+
+{
+    "gender": "Juan"
+}
+
+### invalid input
+POST {{baseUrl}} HTTP/1.1
+
+{
+    "document_type": "Cédula",
+    "document_id": "555555009",
+    "first_name": "Agent 9",
+    "middle_name": "Perni 9",
+    "last_name": "Smith",
+    "birth_date": "001-05-1990",
+    "gender": "Masculino",
+    "email": "johndoe@example.com",
+    "phone": "1234567890"
+}
+
+### normal case
+POST {{baseUrl}} HTTP/1.1
+
+{
+    "document_type": "Cédula",
+    "document_id": "555555009",
+    "first_name": "Agent 9",
+    "middle_name": "Perni 9",
+    "last_name": "Smith",
+    "birth_date": "01-05-1990",
+    "gender": "Masculino",
+    "email": "johndoe@example.com",
+    "phone": "1234567890"
+}
