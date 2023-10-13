@@ -1,7 +1,8 @@
 import logging
 from json.decoder import JSONDecodeError
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request
+from pydantic import ValidationError
 from starlette import status
 
 from config.database import get_mongo_database
@@ -35,25 +36,41 @@ async def create(request: Request):
 
 
 @app.get("/")
-async def list(query: LogItemQuery = Depends()):
-    results = repository.list(query)
-    return results
+def list(
+    operation: str = None,
+    document_id: str = None,
+    document_type: str = None,
+    created_at_from: str = None,
+    created_at_to: str = None,
+):
+    try:
+        query = LogItemQuery(
+            operation=operation,
+            document_id=document_id,
+            document_type=document_type,
+            created_at_from=created_at_from,
+            created_at_to=created_at_to,
+        )
+        results = repository.list(query)
+        return results
+    except ValidationError as e:
+        return {"detail": e.errors()}
 
 
 @app.get("/{log_id}")
-async def detail(log_id: str):
+def detail(log_id: str):
     result = repository.detail(log_id)
     return result
 
 
 @app.patch("/{log_id}")
-async def update(log_id: str):
+def update(log_id: str):
     return {"log_id": log_id}
 
 
 @app.delete("/{log_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete(log_id: str):
-    result = repository.delete(log_id)
+def delete(log_id: str):
+    repository.delete(log_id)
 
 
 @app.on_event("startup")

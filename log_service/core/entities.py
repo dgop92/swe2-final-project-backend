@@ -1,5 +1,5 @@
-from datetime import date, datetime
-from typing import Optional
+from datetime import datetime
+from typing import Any, Optional
 
 from pydantic import BaseModel, field_validator
 
@@ -28,7 +28,7 @@ class LogItemCreateDTO(BaseModel):
     _validate_operation = field_validator("operation")(validate_operation)
     _validate_document_id = field_validator("document_id")(validate_document_id)
     _validate_document_type = field_validator("document_type")(validate_document_type)
-    _validate_created_at = field_validator("created_at")(validate_date)
+    _validate_created_at = field_validator("created_at", mode="before")(validate_date)
 
 
 class LogItemQuery(BaseModel):
@@ -41,5 +41,8 @@ class LogItemQuery(BaseModel):
     _validate_operation = field_validator("operation")(validate_operation)
     _validate_document_id = field_validator("document_id")(validate_document_id)
     _validate_document_type = field_validator("document_type")(validate_document_type)
-    _validate_created_at_from = field_validator("created_at_from")(validate_date)
-    _validate_created_at_to = field_validator("created_at_to")(validate_date)
+
+    @field_validator("created_at_from", "created_at_to", mode="before")
+    @classmethod
+    def validate_date(cls, v: Any):
+        return validate_date(v)
