@@ -35,10 +35,16 @@ def validate_operation(v: str | None) -> str | None:
             f'La operación debe ser una de las siguientes: {", ".join(valid_operations)}'
         )
 
+    return v
+
 
 def validate_date(v: Any) -> Any:
     if v is None:
         return v
+
+    if isinstance(v, datetime):
+        return v
+
     try:
         date_object = datetime.strptime(v, "%d-%m-%Y")
     except Exception:

@@ -72,6 +72,21 @@ services:
     depends_on:
       - mongodb
 
+  log_service:
+    container_name: k_log_service_container
+    build:
+      context: ./log_service
+    restart: "no"
+    env_file:
+      - ./container_files/env-vars/.log-service.env
+    networks:
+      - main_network
+    command:
+      - sh
+      - run-prod.sh
+    depends_on:
+      - mongodb
+
   mongodb:
     container_name: k_mongodb_container
     image: mongo
@@ -113,3 +128,4 @@ services:
       - read_service
       - update_service
       - delete_service
+      - log_service

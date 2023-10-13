@@ -9,6 +9,12 @@ from config.database import get_mongo_database
 from config.logging import config_logger
 from core.entities import LogItemQuery
 from core.repository import LogItemMongoRepository
+from core.utils import (
+    create_log_item,
+    get_detail_uri,
+    get_doc_id_and_doc_type,
+    get_operation,
+)
 
 config_logger()
 logger = logging.getLogger(__name__)
@@ -29,10 +35,50 @@ repository = LogItemMongoRepository(mongo_database)
 @app.post("/", status_code=status.HTTP_201_CREATED)
 async def create(request: Request):
     try:
-        body = await request.json()
-        return body
+        log_data = await request.json()
+
+        service_name = log_data["service"]["name"]
+        operation = get_operation(service_name)
+        status_code = log_data["response"]["status"]
+        upstream_uri = log_data["upstream_uri"]
+
+        logger.info(
+            f"logging info for: {service_name} - URI: {upstream_uri} - OP: {operation} - ST: {status_code}"
+        )
+
+        doc_id = None
+        doc_type = None
+        if service_name == "create-service":
+            if status_code == 201:
+                doc_id, doc_type = get_doc_id_and_doc_type(
+                    log_data["response"].get("body", None)
+                )
+        elif service_name == "update-service":
+            detail_uri = get_detail_uri(upstream_uri)
+            if status_code == 200 and detail_uri is not None:
+                doc_id, doc_type = get_doc_id_and_doc_type(
+                    log_data["response"].get("body", None)
+                )
+        elif service_name == "read-service":
+            detail_uri = get_detail_uri(upstream_uri)
+            if status_code == 200 and detail_uri is not None:
+                doc_id, doc_type = get_doc_id_and_doc_type(
+                    log_data["response"].get("body", None)
+                )
+        elif service_name == "delete-service":
+            detail_uri = get_detail_uri(upstream_uri)
+            if status_code == 204 and detail_uri is not None:
+                doc_id = detail_uri
+
+        log_item = create_log_item(operation, doc_id, doc_type)
+        created_log_item = repository.create(log_item)
+
+        return created_log_item
     except JSONDecodeError:
-        return {"message": "Invalid JSON body."}
+        return {"message": "invalid JSON body."}
+    except Exception:
+        logger.error("could not create log item", exc_info=True)
+        return {"message": "could not create log item"}
 
 
 @app.get("/")

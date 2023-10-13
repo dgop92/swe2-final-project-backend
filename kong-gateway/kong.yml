@@ -34,3 +34,39 @@ services:
       - /people
       methods:
         - DELETE
+
+plugins:
+
+- name: http-log
+  service: create-service
+  config:
+    http_endpoint: http://log_service:8020
+    method: POST
+    timeout: 1000
+    keepalive: 1000
+    flush_timeout: 2
+- name: pre-function
+  service: create-service
+  config:
+    access:
+    - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
+    body_filter:
+    - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())
+
+
+- name: http-log
+  service: read-service
+  config:
+    http_endpoint: http://log_service:8020
+    method: POST
+    timeout: 1000
+    keepalive: 1000
+    flush_timeout: 2
+- name: pre-function
+  service: read-service
+  config:
+    access:
+    - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
+    body_filter:
+    - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())
+
