@@ -22,9 +22,10 @@ monog_database = get_mongo_database()
 repository = PeopleMongoRepository(monog_database)
 
 
-@app.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)
+@app.delete("/{doc_id}", status_code=status.HTTP_200_OK)
 def delete(doc_id: str):
-    repository.delete_by_doc_id(doc_id)
+    people = repository.delete_by_doc_id(doc_id)
+    return people
 
 
 @app.on_event("startup")

@@ -21,8 +21,8 @@ class LogItemDetailDTO(BaseModel):
 
 class LogItemCreateDTO(BaseModel):
     operation: str
-    document_id: str
-    document_type: str
+    document_id: str | None
+    document_type: str | None
     created_at: datetime
 
     _validate_operation = field_validator("operation")(validate_operation)

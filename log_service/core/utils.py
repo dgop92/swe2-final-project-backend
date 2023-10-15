@@ -23,8 +23,8 @@ def create_log_item(
 ) -> LogItemCreateDTO:
     log_item = LogItemCreateDTO(
         operation=operation,
-        document_id=doc_id if doc_id is not None else "000",
-        document_type=doc_type if doc_type is not None else "Cédula",
+        document_id=doc_id,
+        document_type=doc_type,
         created_at=datetime.now(),
     )
 

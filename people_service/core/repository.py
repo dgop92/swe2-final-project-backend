@@ -115,12 +115,9 @@ class PeopleMongoRepository:
 
         return new_people
 
-    def delete_by_doc_id(self, doc_id: str) -> None:
+    def delete_by_doc_id(self, doc_id: str) -> DetailPeopleDTO:
+        people = self.read_by_doc_id(doc_id)
         logger.info(f"deleting people with document_id {doc_id}")
-        data = self.collection.find_one({"document_id": doc_id})
-        if data is None:
-            raise HTTPException(
-                status_code=404, detail=f"La persona con documento {doc_id} no existe"
-            )
         self.collection.delete_one({"document_id": doc_id})
         logger.info(f"people with document_id {doc_id} deleted")
+        return people

@@ -67,18 +67,16 @@ async def create(request: Request):
                 )
         elif service_name == "delete-service":
             detail_uri = get_detail_uri(upstream_uri)
-            if status_code == 204 and detail_uri is not None:
-                doc_id = detail_uri
+            if status_code == 200 and detail_uri is not None:
+                doc_id, doc_type = get_doc_id_and_doc_type(
+                    log_data["response"].get("body", None)
+                )
 
         log_item = create_log_item(operation, doc_id, doc_type)
         if doc_id is not None and doc_type is not None:
             logger.info(
                 f"creating log item with doc_id: {doc_id} and doc_type: {doc_type}"
             )
-            created_log_item = repository.create(log_item)
-            return created_log_item
-        elif doc_id is not None:
-            logger.info(f"creating log item with doc_id: {doc_id}")
             created_log_item = repository.create(log_item)
             return created_log_item
         else:
