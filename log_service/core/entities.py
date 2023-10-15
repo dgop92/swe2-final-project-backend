@@ -14,8 +14,8 @@ from core.validations import (
 class LogItemDetailDTO(BaseModel):
     log_id: str
     operation: str
-    document_id: str
-    document_type: str
+    document_id: str | None
+    document_type: str | None
     created_at: datetime
 
 

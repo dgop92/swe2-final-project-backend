@@ -5,68 +5,106 @@ services:
   - name: create-service
     url: http://create_service:8011
     routes:
-    - name: create-route
-      paths:
-      - /people
-      methods:
-        - POST
+      - name: create-route
+        paths:
+          - /people
+        methods:
+          - POST
   - name: read-service
     url: http://read_service:8012
     routes:
-    - name: read-route
-      paths:
-      - /people
-      methods:
-        - GET
+      - name: read-route
+        paths:
+          - /people
+        methods:
+          - GET
   - name: update-service
     url: http://update_service:8013
     routes:
-    - name: update-route
-      paths:
-      - /people
-      methods:
-        - PATCH
+      - name: update-route
+        paths:
+          - /people
+        methods:
+          - PATCH
   - name: delete-service
     url: http://delete_service:8014
     routes:
-    - name: delete-route
-      paths:
-      - /people
-      methods:
-        - DELETE
+      - name: delete-route
+        paths:
+          - /people
+        methods:
+          - DELETE
+  - name: log-service
+    url: http://log_service:8020
+    routes:
+      - name: log-route
+        paths:
+          - /log
+        methods:
+          - GET
+          - DELETE
 
 plugins:
+  - name: http-log
+    service: create-service
+    config:
+      http_endpoint: http://log_service:8020
+      method: POST
+      timeout: 1000
+      keepalive: 1000
+      flush_timeout: 2
+  - name: pre-function
+    service: create-service
+    config:
+      access:
+        - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
+      body_filter:
+        - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())
 
-- name: http-log
-  service: create-service
-  config:
-    http_endpoint: http://log_service:8020
-    method: POST
-    timeout: 1000
-    keepalive: 1000
-    flush_timeout: 2
-- name: pre-function
-  service: create-service
-  config:
-    access:
-    - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
-    body_filter:
-    - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())
+  - name: http-log
+    service: read-service
+    config:
+      http_endpoint: http://log_service:8020
+      method: POST
+      timeout: 1000
+      keepalive: 1000
+      flush_timeout: 2
+  - name: pre-function
+    service: read-service
+    config:
+      access:
+        - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
+      body_filter:
+        - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())
 
+  - name: http-log
+    service: update-service
+    config:
+      http_endpoint: http://log_service:8020
+      method: POST
+      timeout: 1000
+      keepalive: 1000
+      flush_timeout: 2
+  - name: pre-function
+    service: update-service
+    config:
+      access:
+        - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
+      body_filter:
+        - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())
 
-- name: http-log
-  service: read-service
-  config:
-    http_endpoint: http://log_service:8020
-    method: POST
-    timeout: 1000
-    keepalive: 1000
-    flush_timeout: 2
-- name: pre-function
-  service: read-service
-  config:
-    access:
-    - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
-    body_filter:
-    - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())
-
+  - name: http-log
+    service: delete-service
+    config:
+      http_endpoint: http://log_service:8020
+      method: POST
+      timeout: 1000
+      keepalive: 1000
+      flush_timeout: 2
+  - name: pre-function
+    service: delete-service
+    config:
+      access:
+        - kong.log.set_serialize_value("request.body", kong.request.get_raw_body())
+      body_filter:
+        - kong.log.set_serialize_value("response.body", kong.response.get_raw_body())

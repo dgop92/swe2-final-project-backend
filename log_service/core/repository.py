@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Dict, List
 
+from bson.objectid import ObjectId
 from fastapi import HTTPException
 from pymongo import database
 
@@ -36,42 +37,55 @@ class LogItemMongoRepository:
 
     def list(self, query: LogItemQuery) -> List[LogItemDetailDTO]:
         query_as_dict = query.model_dump()
+        logger.info(f"listing logs with query: {query_as_dict}")
 
         mongo_query = {}
 
-        if "operation" in query_as_dict:
+        if "operation" in query_as_dict and query_as_dict["operation"] is not None:
             mongo_query["operation"] = query_as_dict["operation"]
 
-        if "document_id" in query_as_dict:
+        if "document_id" in query_as_dict and query_as_dict["document_id"] is not None:
             mongo_query["document_id"] = query_as_dict["document_id"]
 
-        if "document_type" in query_as_dict:
+        if (
+            "document_type" in query_as_dict
+            and query_as_dict["document_type"] is not None
+        ):
             mongo_query["document_type"] = query_as_dict["document_type"]
 
-        if "created_at_from" in query_as_dict:
+        if (
+            "created_at_from" in query_as_dict
+            and query_as_dict["created_at_from"] is not None
+        ):
             mongo_query["created_at"] = {
                 **mongo_query.get("created_at", {}),
                 "$gte": query_as_dict["created_at_from"],
             }
 
-        if "created_at_to" in query_as_dict:
+        if (
+            "created_at_to" in query_as_dict
+            and query_as_dict["created_at_to"] is not None
+        ):
             mongo_query["created_at"] = {
                 **mongo_query.get("created_at", {}),
                 "$lte": query_as_dict["created_at_to"],
             }
 
+        logger.info(f"listing logs with mongo query: {mongo_query}")
         result = self.collection.find(mongo_query)
 
         return [from_mongo_data_to_log_item(data) for data in result]
 
     def detail(self, log_id: str) -> LogItemDetailDTO:
-        result = self.collection.find_one({"_id": log_id})
+        logger.info(f"getting log with id: {log_id}")
+        result = self.collection.find_one({"_id": ObjectId(log_id)})
         if not result:
             raise HTTPException(status_code=404, detail="el registro no existe")
         return from_mongo_data_to_log_item(result)
 
     def delete(self, log_id: str):
-        result = self.collection.delete_one({"_id": log_id})
+        logger.info(f"deleting log with id: {log_id}")
+        result = self.collection.delete_one({"_id": ObjectId(log_id)})
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="el registro no existe")
         return None

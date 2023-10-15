@@ -71,9 +71,20 @@ async def create(request: Request):
                 doc_id = detail_uri
 
         log_item = create_log_item(operation, doc_id, doc_type)
-        created_log_item = repository.create(log_item)
+        if doc_id is not None and doc_type is not None:
+            logger.info(
+                f"creating log item with doc_id: {doc_id} and doc_type: {doc_type}"
+            )
+            created_log_item = repository.create(log_item)
+            return created_log_item
+        elif doc_id is not None:
+            logger.info(f"creating log item with doc_id: {doc_id}")
+            created_log_item = repository.create(log_item)
+            return created_log_item
+        else:
+            logger.info("could not create log item, doc_id and doc_type are None")
+            return {"message": "could not create log item"}
 
-        return created_log_item
     except JSONDecodeError:
         return {"message": "invalid JSON body."}
     except Exception:

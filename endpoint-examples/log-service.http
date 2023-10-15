@@ -1,0 +1,30 @@
+@baseUrl = http://localhost:8000/log
+@contentType = application/json
+
+
+### List
+GET {{baseUrl}}/ HTTP/1.1
+
+###
+GET {{baseUrl}}/?operation=create HTTP/1.1
+
+###
+GET {{baseUrl}}/?document_id=555555005 HTTP/1.1
+
+###
+GET {{baseUrl}}/?document_type=Cédula HTTP/1.1
+
+###
+GET {{baseUrl}}/?created_at_from=01-10-2020 HTTP/1.1
+
+### 
+GET {{baseUrl}}/?created_at_from=01-10-2023&created_at_to=02-10-2023 HTTP/1.1
+
+### detail
+GET {{baseUrl}}/652bf8fc601ae73e8fade659 HTTP/1.1
+
+### detail
+GET {{baseUrl}}/652c057bc8ac3a37ba861bce HTTP/1.1
+
+### delete
+DELETE  {{baseUrl}}/652c057bc8ac3a37ba861bce HTTP/1.1
