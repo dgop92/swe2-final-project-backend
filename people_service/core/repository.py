@@ -33,7 +33,7 @@ class PeopleMongoRepository:
         # check if a document with the same document_id already exists
         if self.collection.find_one({"document_id": people.document_id}):
             raise HTTPException(
-                status_code=404,
+                status_code=400,
                 detail=f"Una persona con el documento {people.document_id} ya existe",
             )
         people_as_dict = people.model_dump()
