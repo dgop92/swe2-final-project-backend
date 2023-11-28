@@ -10,6 +10,7 @@ services:
           - /people
         methods:
           - POST
+          - OPTIONS
   - name: read-service
     url: http://read_service:8012
     routes:
@@ -18,6 +19,7 @@ services:
           - /people
         methods:
           - GET
+          - OPTIONS
   - name: update-service
     url: http://update_service:8013
     routes:
@@ -26,6 +28,7 @@ services:
           - /people
         methods:
           - PATCH
+          - OPTIONS
   - name: delete-service
     url: http://delete_service:8014
     routes:
@@ -34,6 +37,7 @@ services:
           - /people
         methods:
           - DELETE
+          - OPTIONS
   - name: log-service
     url: http://log_service:8020
     routes:
@@ -43,23 +47,13 @@ services:
         methods:
           - GET
           - DELETE
+          - OPTIONS
 
 plugins:
   - name: cors
     config:
       origins:
         - "*"
-      headers:
-        - Accept
-        - Accept-Version
-        - Content-Length
-        - Content-MD5
-        - Content-Type
-        - Date
-        - X-Auth-Token
-      exposed_headers:
-        - X-Auth-Token
-      credentials: true
       max_age: 3600
   - name: http-log
     service: create-service
