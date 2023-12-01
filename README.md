@@ -26,3 +26,7 @@ docker-compose up
 - Improve configuration of the api gateway.
 - Create an OpenAPI schema using the auto generated docs of FastAPI
 - Create a simple script to inject environment variables In the declarative configuration of Kong
+
+## Simple component diagram
+
+![Component diagram](./component-diagram.png)
